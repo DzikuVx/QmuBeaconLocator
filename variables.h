@@ -38,10 +38,10 @@ struct BeaconState_t {
     uint8_t a1Voltage = 0;
     uint8_t a2Voltage = 0;
     uint8_t flags = 0;
-    int16_t indicatedRssi = 0;
     double lat = 0;
     double lon = 0; 
     double alt = 0;
+    uint8_t beaconId[4];
 };
 
 struct QspConfiguration_t {

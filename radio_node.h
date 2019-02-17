@@ -23,8 +23,7 @@ class RadioNode {
         void hopFrequency(bool forward, uint8_t fromChannel, uint32_t timestamp);
         void readAndDecode(
             QspConfiguration_t *qsp,
-            BeaconState_t *beaconState,
-            uint8_t bindKey[]
+            BeaconState_t *beaconState
         );
         uint8_t getChannel(void);
         uint32_t getChannelEntryMillis(void);

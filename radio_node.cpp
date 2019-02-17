@@ -72,8 +72,7 @@ uint32_t RadioNode::getChannelEntryMillis(void) {
 
 void RadioNode::readAndDecode(
     QspConfiguration_t *qsp,
-    BeaconState_t *beaconState,
-    uint8_t bindKey[]
+    BeaconState_t *beaconState
 ) {
     uint8_t tmpBuffer[MAX_PACKET_SIZE];
     /*
@@ -83,8 +82,11 @@ void RadioNode::readAndDecode(
         LoRa.read(tmpBuffer, bytesToRead);
 
         for (int i = 0; i < bytesToRead; i++) {
-            qspDecodeIncomingFrame(qsp, tmpBuffer[i], beaconState, bindKey);
+            Serial.print(tmpBuffer[i]);
+            Serial.print(" ");
+            // qspDecodeIncomingFrame(qsp, tmpBuffer[i], beaconState, bindKey);
         }
+        Serial.println();
 
         //After reading, flush radio buffer, we have no need for whatever might be over there
         LoRa.sleep();

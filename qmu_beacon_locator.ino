@@ -65,15 +65,12 @@ void loop()
 
     int packetSize = LoRa.parsePacket();
     if (packetSize) {
-        Serial.println(packetSize);
 
-        for (int i = 0; i < packetSize; i++) { 
-            Serial.print((uint8_t)LoRa.fastRead());
-            Serial.print(" ");
-        }
-        Serial.println(" ");
-        LoRa.sleep();
-        LoRa.receive();
+        radioNode.bytesToRead = packetSize;
+        radioNode.readAndDecode(
+            &qsp,
+            &beaconState
+        );
     }
 
     buttonL.loop();
@@ -87,8 +84,11 @@ void loop()
         zzz = 13;
     }
 
-	while (SerialGPS.available() > 0) {
-        gps.encode(SerialGPS.read());
+    //TODO remove when ready
+    if (SerialGPS.available()) {
+        while (SerialGPS.available() > 0) {
+            gps.encode(SerialGPS.read());
+        }
     }
 
     if (gps.satellites.value() > 4) {
@@ -99,7 +99,7 @@ void loop()
         display.clear();
         display.drawString(0, 0, "Lat: " + String(gps.location.lat(), 5));
         display.drawString(0, 10, "Lon: " + String(gps.location.lng(), 5));
-        display.drawString(0, 20, String(zzz));
+        display.drawString(0, 20, "Sat: " + String(gps.satellites.value(), 5));
         display.display();
 
         nextOledTaskTs = millis() + TASK_OLED_RATE;
