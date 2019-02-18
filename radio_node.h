@@ -13,6 +13,7 @@
 #include "Arduino.h"
 #include "qsp.h"
 #include "variables.h"
+#include "beacons.h"
 
 class RadioNode {
     public:
@@ -23,7 +24,7 @@ class RadioNode {
         void hopFrequency(bool forward, uint8_t fromChannel, uint32_t timestamp);
         void readAndDecode(
             QspConfiguration_t *qsp,
-            BeaconState_t *beaconState
+            Beacons beacons
         );
         uint8_t getChannel(void);
         uint32_t getChannelEntryMillis(void);

@@ -5,10 +5,13 @@
 #ifndef VARIABLES_H
 #define VARIABLES_H
 
+#define MAX_BEACONS 32
+
 #define RADIO_STATE_TX 1
 #define RADIO_STATE_RX 2
 
 #define QSP_PAYLOAD_LENGTH 32
+#define QSP_MAX_FRAME_DECODE_TIME 10
 
 #define MIN_PACKET_SIZE 3 //Min theorethical size of valid packet 
 #define MAX_PACKET_SIZE 34 //Max theorethical size of valid packet
@@ -21,7 +24,8 @@ enum qspFrames {
 };
 
 static const uint8_t qspFrameLengths[QSP_FRAME_COUNT] = {
-    9 //QSP_FRAME_RC_DATA
+    4, //QSP_FRAME_IDENT
+    12 //QSP_FRAME_COORDS
 };
 
 enum dataStates {
@@ -41,7 +45,7 @@ struct BeaconState_t {
     double lat = 0;
     double lon = 0; 
     double alt = 0;
-    uint8_t beaconId[4];
+    uint32_t beaconId;
 };
 
 struct QspConfiguration_t {
@@ -53,8 +57,8 @@ struct QspConfiguration_t {
     uint8_t frameId = 0;
     uint32_t lastFrameReceivedAt[QSP_FRAME_COUNT] = {0};
     uint32_t anyFrameRecivedAt = 0;
-    void (* onSuccessCallback)(QspConfiguration_t*, BeaconState_t*, uint8_t receivedChannel);
-    void (* onFailureCallback)(QspConfiguration_t*, BeaconState_t*);    
+    void (* onSuccessCallback)(uint8_t receivedChannel);
+    void (* onFailureCallback)(void);    
     uint32_t frameDecodingStartedAt = 0;
     uint32_t lastTxSlotTimestamp = 0;
     bool transmitWindowOpen = false;

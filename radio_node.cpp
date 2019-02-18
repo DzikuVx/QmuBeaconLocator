@@ -1,6 +1,7 @@
 #include "radio_node.h"
 #include "lora.h"
 
+
 uint32_t getFrequencyForChannel(uint8_t channel) {
     return RADIO_FREQUENCY_MIN + (RADIO_CHANNEL_WIDTH * channel);
 }
@@ -72,7 +73,7 @@ uint32_t RadioNode::getChannelEntryMillis(void) {
 
 void RadioNode::readAndDecode(
     QspConfiguration_t *qsp,
-    BeaconState_t *beaconState
+    Beacons beacons
 ) {
     uint8_t tmpBuffer[MAX_PACKET_SIZE];
     /*
@@ -82,9 +83,9 @@ void RadioNode::readAndDecode(
         LoRa.read(tmpBuffer, bytesToRead);
 
         for (int i = 0; i < bytesToRead; i++) {
-            Serial.print(tmpBuffer[i]);
-            Serial.print(" ");
-            // qspDecodeIncomingFrame(qsp, tmpBuffer[i], beaconState, bindKey);
+            // Serial.print(tmpBuffer[i]);
+            // Serial.print(" ");
+            qspDecodeIncomingFrame(qsp, tmpBuffer[i]);
         }
         Serial.println();
 
