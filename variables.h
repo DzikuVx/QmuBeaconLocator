@@ -20,12 +20,14 @@
 enum qspFrames {
     QSP_FRAME_IDENT = 0,
     QSP_FRAME_COORDS,
+    QSP_FRAME_MISC,
     QSP_FRAME_COUNT
 };
 
 static const uint8_t qspFrameLengths[QSP_FRAME_COUNT] = {
     4, //QSP_FRAME_IDENT
-    12 //QSP_FRAME_COORDS
+    12, //QSP_FRAME_COORDS
+    17 //QSP_FRAME_MISC
 };
 
 enum dataStates {
@@ -33,19 +35,6 @@ enum dataStates {
     QSP_STATE_FRAME_TYPE_RECEIVED,
     QSP_STATE_PAYLOAD_RECEIVED,
     QSP_STATE_CRC_RECEIVED
-};
-
-struct BeaconState_t {
-    uint8_t rssi = 0;
-    uint8_t snr = 0;
-    uint8_t rxVoltage = 0;
-    uint8_t a1Voltage = 0;
-    uint8_t a2Voltage = 0;
-    uint8_t flags = 0;
-    double lat = 0;
-    double lon = 0; 
-    double alt = 0;
-    uint32_t beaconId;
 };
 
 struct QspConfiguration_t {

@@ -15,6 +15,8 @@ class Beacons {
         void updatePosition(uint32_t beaconId, double lat, double lon, double alt);
         Beacon *getBeacon(uint32_t id);
         Beacon *getEmpty(void);
+        Beacon *get(uint8_t index);
+        uint8_t count(void);
     private:
         Beacon _beacons[BEACONS_MAX_COUNT];
 };
