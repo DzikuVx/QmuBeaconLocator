@@ -41,3 +41,27 @@ void Beacon::setLon(double lon) {
 void Beacon::setAlt(double alt) {
     _alt = alt;
 }
+
+uint8_t Beacon::getRssi(void) {
+    return _rssi;
+};
+
+void Beacon::setRssi(uint8_t value) {
+    _rssi = value;
+};
+
+uint8_t Beacon::getSnr(void) {
+    return _snr;
+};
+
+void Beacon::setSnr(uint8_t value) {
+    _snr = value;
+};
+
+uint32_t Beacon::getLastContactMillis(void) {
+    return _lastContactMillis;
+};
+
+void Beacon::setLastContactMillis(uint32_t value) {
+    _lastContactMillis = value;
+}

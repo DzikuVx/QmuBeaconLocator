@@ -18,11 +18,20 @@ class Beacon {
         void setLat(double lat);
         void setLon(double lon);
         void setAlt(double alt);
+        uint8_t getRssi(void);
+        void setRssi(uint8_t value);
+        uint8_t getSnr(void);
+        void setSnr(uint8_t value);
+        uint32_t getLastContactMillis(void);
+        void setLastContactMillis(uint32_t value);
     private:
         uint32_t _id;
         double _lat;
         double _lon;
         double _alt;
+        uint8_t _rssi;
+        uint8_t _snr;
+        uint32_t _lastContactMillis;
 
 };
 

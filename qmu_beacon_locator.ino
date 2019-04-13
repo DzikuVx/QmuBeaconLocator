@@ -55,22 +55,24 @@ void onQspSuccess(uint8_t receivedChannel) {
     radioNode.readRssi();
     radioNode.readSnr();
 
-    for (uint8_t i = 0; i < qsp.payloadLength; i++) {
-        Serial.print(qsp.payload[i]);
-    }
-    Serial.println();
+    uint32_t beaconId = qsp.payload[3] << 24;
+    beaconId += qsp.payload[2] << 16;
+    beaconId += qsp.payload[1] << 8;
+    beaconId += qsp.payload[0];
+    
+    Serial.print("Becon="); Serial.println(beaconId);
+
+    currentBeacon = beaconId;
+    Beacon *beacon = beacons.getBeacon(beaconId);
+
+    /*
+     * Set common beacon attributes
+     */
+    beacon->setRssi(radioNode.rssi);
+    beacon->setSnr(radioNode.snr);
+    beacon->setLastContactMillis(millis());
 
     if (qsp.frameId == QSP_FRAME_COORDS) {
-        uint32_t beaconId = qsp.payload[3] << 24;
-        beaconId += qsp.payload[2] << 16;
-        beaconId += qsp.payload[1] << 8;
-        beaconId += qsp.payload[0];
-        
-        Serial.println(beaconId);
-
-        currentBeacon = beaconId;
-        Beacon *beacon = beacons.getBeacon(beaconId);
-
         long tmp;
 
         tmp = qsp.payload[4];
@@ -86,8 +88,6 @@ void onQspSuccess(uint8_t receivedChannel) {
         tmp += qsp.payload[11] << 24;
 
         beacon->setLon(tmp / 10000000.0d);
-
-        Serial.println(beacon->getLat());
     }
 
 //     /*
@@ -239,11 +239,12 @@ void loop()
     }
 
     if (nextSerialTaskTs < millis()) {
-
+        // Beacon *beacon = beacons.getBeacon(currentBeacon);
         // Serial.print("LAT=");  Serial.println(gps.location.lat(), 6);
         // Serial.print("LONG="); Serial.println(gps.location.lng(), 6);
         // Serial.print("ALT=");  Serial.println(gps.altitude.meters());
-        // Serial.print("Sats=");  Serial.println(gps.satellites.value());
+        // Serial.print("RSSI=");  Serial.println(beacon->getRssi());
+        // Serial.print("SNR=");  Serial.println(beacon->getSnr());
 
         nextSerialTaskTs = millis() + TASK_SERIAL_RATE;
     }
