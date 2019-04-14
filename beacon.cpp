@@ -16,6 +16,7 @@ void Beacon::setPos(double lat, double lon, double alt) {
     _lat = lat;
     _lon = lon;
     _alt = alt;
+    _hasPos = true;
 };
 
 double Beacon::getLat(void) {
@@ -32,10 +33,12 @@ double Beacon::getAlt(void) {
 
 void Beacon::setLat(double lat) {
     _lat = lat;
+    _hasPos = true;
 }
 
 void Beacon::setLon(double lon) {
     _lon = lon;
+    _hasPos = true;
 }
 
 void Beacon::setAlt(double alt) {
@@ -65,3 +68,7 @@ uint32_t Beacon::getLastContactMillis(void) {
 void Beacon::setLastContactMillis(uint32_t value) {
     _lastContactMillis = value;
 }
+
+bool Beacon::hasPos(void) {
+    return _hasPos;
+};

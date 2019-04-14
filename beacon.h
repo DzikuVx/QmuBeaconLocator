@@ -24,8 +24,10 @@ class Beacon {
         void setSnr(uint8_t value);
         uint32_t getLastContactMillis(void);
         void setLastContactMillis(uint32_t value);
+        bool hasPos(void);
     private:
         uint32_t _id;
+        bool _hasPos;
         double _lat;
         double _lon;
         double _alt;

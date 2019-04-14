@@ -57,7 +57,7 @@ void onQspSuccess(uint8_t receivedChannel) {
     beaconId += qsp.payload[1] << 8;
     beaconId += qsp.payload[0];
     
-    Serial.print("Beacon="); Serial.println(beaconId);
+    // Serial.print("Beacon="); Serial.println(beaconId);
 
     Beacon *beacon = beacons.getBeacon(beaconId);
 
@@ -110,7 +110,7 @@ void setup()
     LoRa.receive();
 
     oledDisplay.init();
-    oledDisplay.page(OLED_PAGE_LIST);
+    oledDisplay.page(OLED_PAGE_DISTANCE);
 }
 
 void loop()
@@ -173,18 +173,20 @@ void loop()
     }
 */
     if (nextSerialTaskTs < millis()) {
-        // Beacon *beacon = beacons.getBeacon(currentBeaconId);
-        // Serial.print("LAT=");  Serial.println(gps.location.lat(), 6);
-        // Serial.print("LONG="); Serial.println(gps.location.lng(), 6);
-        // Serial.print("ALT=");  Serial.println(gps.altitude.meters());
-        // Serial.print("RSSI=");  Serial.println(beacon->getRssi());
-        // Serial.print("SNR=");  Serial.println(beacon->getSnr());
-
+        if (currentBeaconIndex >= 0) {
+            // Beacon *beacon = beacons.get(currentBeaconIndex);
+            // Serial.print("LAT=");  Serial.println(gps.location.lat(), 6);
+            // Serial.print("LONG="); Serial.println(gps.location.lng(), 6);
+            // Serial.print("ALT=");  Serial.println(gps.altitude.meters());
+            // Serial.print("RSSI=");  Serial.println(beacon->getRssi());
+            // Serial.print("SNR=");  Serial.println(beacon->getSnr());
+        }
         nextSerialTaskTs = millis() + TASK_SERIAL_RATE;
     }
 
     if (currentBeaconIndex == -1 && beacons.count() > 0) {
         currentBeaconIndex = 0;
+        currentBeaconId = beacons.get(currentBeaconIndex)->getId();
     }
 
     oledDisplay.loop();

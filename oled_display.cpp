@@ -36,8 +36,8 @@ void OledDisplay::page(uint8_t page) {
 
     switch (page) {
         
-        case OLED_PAGE_LIST:
-            renderPageList();
+        case OLED_PAGE_DISTANCE:
+            renderPageDistance();
             break;
         case OLED_PAGE_BEACON:
             renderPageBeacon();
@@ -55,14 +55,32 @@ void OledDisplay::renderHeader(String title) {
     _display->drawString(90, 0, String(gps.satellites.value()) + " sats");
 }
 
-void OledDisplay::renderPageList() {
+void OledDisplay::renderPageDistance() {
     _display->clear();
 
-    renderHeader("Beacons");
+    renderHeader("Beacon " + String(currentBeaconIndex + 1) + "/" + String(beacons.count()));
 
     if (beacons.count() > 0) {
         _display->setFont(ArialMT_Plain_10);
-        _display->drawString(0, 16, "Beacon " + String(currentBeaconIndex + 1) + "/" + String(beacons.count()));
+
+        Beacon *beacon = beacons.getBeacon(currentBeaconId);
+        _display->drawString(0, 10, "ID: " + String(beacon->getId(), HEX));
+        _display->drawString(70, 10, "RSSI: " + String(beacon->getRssi()));
+
+        if (beacon->hasPos() && gps.satellites.value() > 5) {
+            _display->setFont(ArialMT_Plain_16);
+
+            double dst = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), beacon->getLat(), beacon->getLon());
+            _display->drawString(0, 30, "Dst: " + String(dst, 0) + "m");
+
+        } else {
+            _display->setFont(ArialMT_Plain_16);
+            _display->drawString(0, 30, "No distance");
+        }
+
+        _display->setFont(ArialMT_Plain_10);
+        _display->drawString(0, 54, String(beacon->getLat(), 5));
+        _display->drawString(64, 54, String(beacon->getLon(), 5));
 
 
     } else {

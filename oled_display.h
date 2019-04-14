@@ -7,7 +7,7 @@
 
 enum txOledPages {
     OLED_PAGE_NONE,
-    OLED_PAGE_LIST,
+    OLED_PAGE_DISTANCE,
     OLED_PAGE_BEACON
 };
 
@@ -17,9 +17,10 @@ enum txOledPages {
 extern TinyGPSPlus gps;
 extern Beacons beacons;
 extern int8_t currentBeaconIndex;
+extern uint32_t currentBeaconId;
 
 const uint8_t pageSequence[OLED_DISPLAY_PAGE_COUNT] = {
-    OLED_PAGE_LIST,
+    OLED_PAGE_DISTANCE,
     OLED_PAGE_BEACON
 };
 
@@ -32,7 +33,7 @@ class OledDisplay {
         void nextPage();
     private:
         SSD1306 *_display;
-        void renderPageList();
+        void renderPageDistance();
         void renderPageBeacon();
         void renderHeader(String title);
         uint8_t _page = OLED_PAGE_NONE;
