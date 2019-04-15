@@ -71,7 +71,7 @@ void OledDisplay::renderPageDistance() {
         String contactString = "";
 
         if (lastContact > 60) {
-            contactString = String(lastContact / 60, 0) + "min";
+            contactString = String((int)(lastContact / 60)) + "min";
         } else {
             contactString = String(lastContact) + "s";
         }
