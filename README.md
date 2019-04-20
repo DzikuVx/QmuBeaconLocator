@@ -13,9 +13,12 @@ QmuBeaconLocator stands for QuadMeUp Beacon Locator and is a part of QmuBeacon p
 * Any 868/915Mhz antenna
 * 2 [tactile buttons](http://bit.ly/2UqsWpY)
 
+![QmuBeaconLocator Diagram](qmu_beacon_locator_diagram_schem.png)
+
 # More about
 
 You can see more about this project in following videos
 
 * [https://www.youtube.com/watch?v=ve5t_pRLi8U](https://www.youtube.com/watch?v=ve5t_pRLi8U)
 * [https://www.youtube.com/watch?v=46_azIkKsvs](https://www.youtube.com/watch?v=46_azIkKsvs)
+* [https://www.youtube.com/watch?v=FtLlBvzTjec](https://www.youtube.com/watch?v=FtLlBvzTjec)
