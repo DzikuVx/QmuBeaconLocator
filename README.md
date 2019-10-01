@@ -5,6 +5,13 @@ QmuBeaconLocator stands for QuadMeUp Beacon Locator and is a part of QmuBeacon p
 * [QmuBeacon](https://github.com/DzikuVx/QmuBeacon) - radio beacon that can be installed on any device to be tracked (airplane, drone, car, person?)
 * [QmuBeaconLocator](https://github.com/DzikuVx/QmuBeaconLocator) - receiver part of the QmuBeacon that allows to locate beacons in range
 
+# Required libraries
+
+To compile QmuBeacon you will need some external libraries that are not part of this repository. Those are:
+
+* [TinyGPS++](https://github.com/mikalhart/TinyGPSPlus)
+* [QmuTactile](https://github.com/DzikuVx/QmuTactile)
+
 # Hardware
 
 * [TTGO LORA32 ESP32 board](http://bit.ly/2BjG47d)
