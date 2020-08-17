@@ -1,11 +1,9 @@
 #pragma once
 
 #define RADIO_FREQUENCY_MIN 872000000
-#define RADIO_FREQUENCY_MAX 874000000
-#define RADIO_FREQUENCY_RANGE (RADIO_FREQUENCY_MAX-RADIO_FREQUENCY_MIN)
 #define RADIO_CHANNEL_WIDTH 250000
-#define RADIO_CHANNEL_COUNT 9 // 9 channels in 2MHz range (RADIO_FREQUENCY_RANGE/RADIO_CHANNEL_WIDTH) + 1
-#define RADIO_HOP_OFFSET 5
+#define RADIO_CHANNEL_COUNT 1   //Only 1 channel
+#define RADIO_HOP_OFFSET 0      //Hop to the same
 
 #ifndef RADIO_NODE_H
 #define RADIO_NODE_H
@@ -22,10 +20,7 @@ class RadioNode {
         void readRssi(void);
         void readSnr(void);
         void hopFrequency(bool forward, uint8_t fromChannel, uint32_t timestamp);
-        void readAndDecode(
-            QspConfiguration_t *qsp,
-            Beacons beacons
-        );
+        void readAndDecode(QspConfiguration_t *qsp);
         uint8_t getChannel(void);
         uint32_t getChannelEntryMillis(void);
         void handleTxDoneState(bool hop);
@@ -44,10 +39,10 @@ class RadioNode {
         uint8_t snr = 0;
         uint8_t lastReceivedChannel = 0;
         uint8_t failedDwellsCount = 0;
-        uint32_t loraBandwidth = 125000;
-        uint8_t loraSpreadingFactor = 9;
-        uint8_t loraCodingRate = 8;
-        uint8_t loraTxPower = 7; // Defines output power of TX, defined in dBm range from 2-17
+        uint32_t loraBandwidth = 250000;
+        uint8_t loraSpreadingFactor = 7;
+        uint8_t loraCodingRate = 6;
+        uint8_t loraTxPower = 10; // Defines output power of TX, defined in dBm range from 2-17
         bool canTransmit = false;
     private:
         uint8_t _channel = 0;

@@ -13,17 +13,14 @@ void OledDisplay::init() {
 }
 
 void OledDisplay::loop() {
-    page(pageSequence[_mainPageSequenceIndex]);
+    page();
 }
 
-void OledDisplay::nextPage() {
-    _mainPageSequenceIndex++;
-    if (_mainPageSequenceIndex == OLED_DISPLAY_PAGE_COUNT) {
-        _mainPageSequenceIndex = 0;
-    }
+void OledDisplay::setPage(uint8_t page) {
+    _page = page;
 }
 
-void OledDisplay::page(uint8_t page) {
+void OledDisplay::page() {
 
     static uint32_t lastUpdate = 0;
 
@@ -34,16 +31,15 @@ void OledDisplay::page(uint8_t page) {
 
     _forceDisplay = false;
 
-    switch (page) {
+    switch (_page) {
         
-        case OLED_PAGE_DISTANCE:
-            renderPageDistance();
+        case OLED_PAGE_BEACON_LIST:
+            renderPageBeaconList();
             break;
-        case OLED_PAGE_BEACON:
-            renderPageBeacon();
+        case OLED_PAGE_I_AM_A_BEACON:
+            renderPageIamBeacon();
             break;
     }
-    _page = page;
 
     lastUpdate = millis();
 }
@@ -55,7 +51,7 @@ void OledDisplay::renderHeader(String title) {
     _display->drawString(90, 0, String(gps.satellites.value()) + " sats");
 }
 
-void OledDisplay::renderPageDistance() {
+void OledDisplay::renderPageBeaconList() {
     _display->clear();
 
     renderHeader("Beacon " + String(currentBeaconIndex + 1) + "/" + String(beacons.count()));
@@ -113,11 +109,15 @@ void OledDisplay::renderPageDistance() {
     _display->display();
 }
 
-void OledDisplay::renderPageBeacon() {
+void OledDisplay::renderPageIamBeacon() {
     _display->clear();
 
-    renderHeader("Locator");
+    renderHeader("I'm a beacon");
 
+    _display->drawString(0, 30, "TX mode");
+    
+    _display->drawString(0, 54, String(gps.location.lat(), 5));
+    _display->drawString(64, 54, String(gps.location.lng(), 5));
     
     _display->display();
 }

@@ -7,8 +7,8 @@
 
 enum txOledPages {
     OLED_PAGE_NONE,
-    OLED_PAGE_DISTANCE,
-    OLED_PAGE_BEACON
+    OLED_PAGE_BEACON_LIST,
+    OLED_PAGE_I_AM_A_BEACON
 };
 
 #define OLED_COL_COUNT 64
@@ -19,25 +19,20 @@ extern Beacons beacons;
 extern int8_t currentBeaconIndex;
 extern uint32_t currentBeaconId;
 
-const uint8_t pageSequence[OLED_DISPLAY_PAGE_COUNT] = {
-    OLED_PAGE_DISTANCE,
-    OLED_PAGE_BEACON
-};
-
 class OledDisplay {
     public:
         OledDisplay(SSD1306 *display);
         void init();
         void loop();
-        void page(uint8_t page);
-        void nextPage();
+        
+        void setPage(uint8_t page);
     private:
         SSD1306 *_display;
-        void renderPageDistance();
-        void renderPageBeacon();
+        void renderPageBeaconList();
+        void renderPageIamBeacon();
         void renderHeader(String title);
+        void page();
         uint8_t _page = OLED_PAGE_NONE;
-        uint8_t _mainPageSequenceIndex = 0;
         bool _forceDisplay = false;
 };
 

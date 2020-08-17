@@ -53,4 +53,10 @@ struct QspConfiguration_t {
     bool transmitWindowOpen = false;
 };
 
+enum deviceModes {
+    DEVICE_MODE_LOCATOR = 0,
+    DEVICE_MODE_BEACON,
+    DEVICE_MODE_LAST
+};
+
 #endif

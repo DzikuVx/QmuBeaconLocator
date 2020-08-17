@@ -39,11 +39,16 @@ Beacons beacons;
 
 #define TASK_SERIAL_RATE 500
 #define TASK_LORA_READ 2 // We check for new packets only from time to time, no need to do it more often
+#define TASK_LORA_TX_MS 200 // Number of ms between positio updates
 
 uint32_t nextSerialTaskTs = 0;
-uint32_t nextLoRaTaskTs = 0;
+uint32_t nextLoRaReadTaskTs = 0;
+uint32_t nextLoRaTxTaskTs = 0;
 uint32_t currentBeaconId = 0;
 int8_t currentBeaconIndex = -1;
+
+uint8_t currentDeviceMode = DEVICE_MODE_LOCATOR;
+uint8_t previousDeviceMode = DEVICE_MODE_LOCATOR;
 
 void onQspSuccess(uint8_t receivedChannel) {
     //If recide received a valid frame, that means it can start to talk
@@ -110,23 +115,21 @@ void setup()
     LoRa.receive();
 
     oledDisplay.init();
-    oledDisplay.page(OLED_PAGE_DISTANCE);
+    oledDisplay.setPage(OLED_PAGE_BEACON_LIST);
 }
 
 void loop()
 {
-    if (nextLoRaTaskTs < millis()) {
+    radioNode.handleTxDoneState(false);
+
+    if (radioNode.radioState != RADIO_STATE_TX && nextLoRaReadTaskTs < millis()) {
         int packetSize = LoRa.parsePacket();
         if (packetSize) {
-
             radioNode.bytesToRead = packetSize;
-            radioNode.readAndDecode(
-                &qsp,
-                beacons
-            );
+            radioNode.readAndDecode(&qsp);
         }
 
-        nextLoRaTaskTs = millis() + TASK_LORA_READ;
+        nextLoRaReadTaskTs = millis() + TASK_LORA_READ;
     }
 
     /*
@@ -149,29 +152,42 @@ void loop()
         }
     }
 
-    if (gps.satellites.value() > 4) {
-
+    /*
+     * Right button long press changes the device mode!
+     */
+    if (buttonR.getState() == TACTILE_STATE_LONG_PRESS) {
+        previousDeviceMode = currentDeviceMode;
+        currentDeviceMode++;
+        if (currentDeviceMode == DEVICE_MODE_LAST) {
+            currentDeviceMode = DEVICE_MODE_LOCATOR;
+        }
     }
-/*
-    if (nextOledTaskTs < millis()) {
-        display.clear();
-        display.drawString(0, 0, "Lat: " + String(gps.location.lat(), 5));
-        display.drawString(0, 10, "Lon: " + String(gps.location.lng(), 5));
-        display.drawString(0, 20, "Sat: " + String(gps.satellites.value(), 5));
 
-        Beacon *beacon = beacons.getBeacon(currentBeaconId);
+    /*
+     * Handle device mode changes
+     */
+    if (currentDeviceMode != previousDeviceMode) {
 
-        display.drawString(0, 30, "Lat: " + String(beacon->getLat(), 5));
-        display.drawString(0, 40, "Lon: " + String(beacon->getLon(), 5));
+        if (currentDeviceMode == DEVICE_MODE_LOCATOR) {
+            oledDisplay.setPage(OLED_PAGE_BEACON_LIST);
+        } else {
+            oledDisplay.setPage(OLED_PAGE_I_AM_A_BEACON);
+        }
 
-        double dst = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), beacon->getLat(), beacon->getLon());
-        display.drawString(0, 50, "Dst: " + String(dst, 1));
-
-        display.display();
-
-        nextOledTaskTs = millis() + TASK_OLED_RATE;
+        previousDeviceMode = currentDeviceMode;
     }
-*/
+
+    if (
+        currentDeviceMode == DEVICE_MODE_BEACON &&
+        nextLoRaTxTaskTs > millis() && 
+        gps.satellites.value() > 4
+    ) {
+
+        // Prepare packet and send position
+
+        nextLoRaTxTaskTs = millis() + TASK_LORA_TX_MS;
+    }
+
     if (nextSerialTaskTs < millis()) {
         if (currentBeaconIndex >= 0) {
             // Beacon *beacon = beacons.get(currentBeaconIndex);
