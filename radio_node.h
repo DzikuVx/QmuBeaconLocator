@@ -20,7 +20,7 @@ class RadioNode {
         void readRssi(void);
         void readSnr(void);
         void hopFrequency(bool forward, uint8_t fromChannel, uint32_t timestamp);
-        void readAndDecode(QspConfiguration_t *qsp);
+        void readAndDecode(QspConfiguration_t *qsp, uint8_t bindKey[]);
         uint8_t getChannel(void);
         uint32_t getChannelEntryMillis(void);
         void handleTxDoneState(bool hop);

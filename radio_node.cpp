@@ -72,7 +72,8 @@ uint32_t RadioNode::getChannelEntryMillis(void) {
 }
 
 void RadioNode::readAndDecode(
-    QspConfiguration_t *qsp
+    QspConfiguration_t *qsp,
+    uint8_t bindKey[]
 ) {
     uint8_t tmpBuffer[MAX_PACKET_SIZE];
     /*
@@ -82,7 +83,7 @@ void RadioNode::readAndDecode(
         LoRa.read(tmpBuffer, bytesToRead);
 
         for (int i = 0; i < bytesToRead; i++) {
-            qspDecodeIncomingFrame(qsp, tmpBuffer[i]);
+            qspDecodeIncomingFrame(qsp, tmpBuffer[i], bindKey);
         }
 
         //After reading, flush radio buffer, we have no need for whatever might be over there
@@ -111,7 +112,7 @@ void RadioNode::hopFrequency(bool forward, uint8_t fromChannel, uint32_t timesta
     LoRa.idle();
 }
 
-void RadioNode::handleTxDoneState(bool hop) {
+bool RadioNode::handleTxDoneState(bool hop) {
     const uint32_t currentMillis = millis();
     
     if (
@@ -130,6 +131,9 @@ void RadioNode::handleTxDoneState(bool hop) {
         LoRa.receive();
         radioState = RADIO_STATE_RX;
         nextTxCheckMillis = currentMillis + 1; //We check of TX done every 1ms
+        return true;
+    } else {
+        return false;
     }
 }
 

@@ -40,7 +40,8 @@ void qspInitCrc(QspConfiguration_t *qsp, uint8_t bindKey[]) {
 
 void qspDecodeIncomingFrame(
     QspConfiguration_t *qsp, 
-    uint8_t incomingByte
+    uint8_t incomingByte,
+    uint8_t bindKey[]
 ) {
     static uint8_t frameId;
     static uint8_t payloadLength;
@@ -49,8 +50,7 @@ void qspDecodeIncomingFrame(
 
     if (qsp->protocolState == QSP_STATE_IDLE)
     {
-        // qspInitCrc(qsp, bindKey);
-        qsp->crc = 0;
+        qspInitCrc(qsp, bindKey);
         qspClearPayload(qsp);
         receivedPayload = 0;
         qsp->frameDecodingStartedAt = millis();
@@ -106,8 +106,7 @@ void qspEncodeFrame(
     uint8_t bindKey[]
 ) {
     //Salt CRC with bind key
-    // qspInitCrc(qsp, bindKey);
-    qsp->crc = 0;
+    qspInitCrc(qsp, bindKey);
 
     //Write frame type and length
     // We are no longer sending payload length, so 4 bits are now free for other usages

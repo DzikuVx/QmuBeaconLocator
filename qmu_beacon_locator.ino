@@ -34,6 +34,7 @@ QmuTactile buttonR(PIN_BUTTON_R);
 
 RadioNode radioNode;
 QspConfiguration_t qsp = {};
+uint8_t bindKey[4] = {0x13, 0x27, 0x42, 0x07};
 
 Beacons beacons;
 
@@ -116,6 +117,7 @@ void setup()
 
     oledDisplay.init();
     oledDisplay.setPage(OLED_PAGE_BEACON_LIST);
+
 }
 
 void loop()
@@ -126,7 +128,7 @@ void loop()
         int packetSize = LoRa.parsePacket();
         if (packetSize) {
             radioNode.bytesToRead = packetSize;
-            radioNode.readAndDecode(&qsp);
+            radioNode.readAndDecode(&qsp, bindKey);
         }
 
         nextLoRaReadTaskTs = millis() + TASK_LORA_READ;
