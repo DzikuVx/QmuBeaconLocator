@@ -9,7 +9,27 @@
 #include "beacons.h"
 #include "oled_display.h"
 
-#ifdef ARDUINO_ESP32_DEV
+//Target
+#define ARDUINO_TTGO_TBEAM_ESP32
+
+#ifdef ARDUINO_TTGO_TBEAM_ESP32
+    #define LORA_SS_PIN     18
+    #define LORA_RST_PIN    23
+    #define LORA_DI0_PIN    26
+
+    #define SPI_SCK_PIN     5
+    #define SPI_MISO_PIN    19
+    #define SPI_MOSI_PIN    27
+
+    #define PIN_BUTTON_L 38
+    // #define PIN_BUTTON_R 0
+
+    #define I2C_SDA_PIN 21
+    #define I2C_SCL_PIN 22
+
+    #define GPS_SERIAL_TX_PIN 12
+    #define GPS_SERIAL_RX_PIN 34
+#elif defined(ARDUINO_ESP32_DEV)
     #define LORA_SS_PIN     18
     #define LORA_RST_PIN    14
     #define LORA_DI0_PIN    26
@@ -17,20 +37,31 @@
     #define SPI_SCK_PIN     5
     #define SPI_MISO_PIN    19
     #define SPI_MOSI_PIN    27
+
+    #define PIN_BUTTON_L 4
+    #define PIN_BUTTON_R 0
+
+    #define I2C_SDA_PIN 21
+    #define I2C_SCL_PIN 22
+
+    #define GPS_SERIAL_TX_PIN 15
+    #define GPS_SERIAL_RX_PIN 13
 #else
     #error please select hardware
 #endif
 
-#define PIN_BUTTON_L 4
-#define PIN_BUTTON_R 0
+
 
 TinyGPSPlus gps;
 HardwareSerial SerialGPS(1);
-SSD1306  display(0x3c, 21, 22);
+SSD1306  display(0x3c, I2C_SDA_PIN, I2C_SCL_PIN);
 OledDisplay oledDisplay(&display);
 
 QmuTactile buttonL(PIN_BUTTON_L);
+
+#ifdef PIN_BUTTON_R
 QmuTactile buttonR(PIN_BUTTON_R);
+#endif
 
 RadioNode radioNode;
 QspConfiguration_t qsp = {};
@@ -100,10 +131,12 @@ void onQspFailure() {
 void setup()
 {
     Serial.begin(115200);
-	SerialGPS.begin(9600, SERIAL_8N1, 13, 15);
+	SerialGPS.begin(9600, SERIAL_8N1, GPS_SERIAL_RX_PIN, GPS_SERIAL_TX_PIN);
 
     buttonL.start();
+#ifdef PIN_BUTTON_R
     buttonR.start();
+#endif
 
     qsp.onSuccessCallback = onQspSuccess;
     qsp.onFailureCallback = onQspFailure;
@@ -145,7 +178,9 @@ void loop()
     }
 
     buttonL.loop();
+#ifdef PIN_BUTTON_R
     buttonR.loop();
+#endif
 
     //TODO remove when ready
     if (SerialGPS.available()) {
@@ -155,9 +190,9 @@ void loop()
     }
 
     /*
-     * Right button long press changes the device mode!
+     * LEFT button long press changes the device mode!
      */
-    if (buttonR.getState() == TACTILE_STATE_LONG_PRESS) {
+    if (buttonL.getState() == TACTILE_STATE_LONG_PRESS) {
         previousDeviceMode = currentDeviceMode;
         currentDeviceMode++;
         if (currentDeviceMode == DEVICE_MODE_LAST) {
@@ -184,7 +219,6 @@ void loop()
         nextLoRaTxTaskTs > millis() && 
         gps.satellites.value() > 4
     ) {
-
         // Prepare packet and send position
 
         nextLoRaTxTaskTs = millis() + TASK_LORA_TX_MS;

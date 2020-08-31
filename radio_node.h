@@ -23,7 +23,7 @@ class RadioNode {
         void readAndDecode(QspConfiguration_t *qsp, uint8_t bindKey[]);
         uint8_t getChannel(void);
         uint32_t getChannelEntryMillis(void);
-        void handleTxDoneState(bool hop);
+        bool handleTxDoneState(bool hop);
         void handleTx(QspConfiguration_t *qsp, uint8_t bindKey[]);
         void set(
             uint8_t power, 
