@@ -54,12 +54,12 @@ void OledDisplay::renderHeader(String title) {
 void OledDisplay::renderPageBeaconList() {
     _display->clear();
 
-    renderHeader("Beacon " + String(currentBeaconIndex + 1) + "/" + String(beacons.count()));
+    renderHeader("Beacon " + String(beacons.currentBeaconIndex + 1) + "/" + String(beacons.count()));
 
     if (beacons.count() > 0) {
         _display->setFont(ArialMT_Plain_10);
 
-        Beacon *beacon = beacons.getBeacon(currentBeaconId);
+        Beacon *beacon = beacons.getBeacon(beacons.currentBeaconId);
         _display->drawString(0, 10, "ID: " + String(beacon->getId(), HEX));
         _display->drawString(70, 10, "RSSI: " + String(beacon->getRssi()));
 

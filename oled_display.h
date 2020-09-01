@@ -16,8 +16,6 @@ enum txOledPages {
 
 extern TinyGPSPlus gps;
 extern Beacons beacons;
-extern int8_t currentBeaconIndex;
-extern uint32_t currentBeaconId;
 
 class OledDisplay {
     public:

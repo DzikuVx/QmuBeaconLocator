@@ -14,6 +14,7 @@ extern OledDisplay oledDisplay;
 extern QspConfiguration_t qsp;
 extern RadioNode radioNode;
 extern ConfigNode configNode;
+extern Beacons beacons;
 
 enum deviceModes {
     DEVICE_MODE_LOCATOR = 0,

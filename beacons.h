@@ -17,6 +17,8 @@ class Beacons {
         Beacon *getEmpty(void);
         Beacon *get(uint8_t index);
         uint8_t count(void);
+        uint32_t currentBeaconId = 0;
+        int8_t currentBeaconIndex = -1;
     private:
         Beacon _beacons[BEACONS_MAX_COUNT];
 };

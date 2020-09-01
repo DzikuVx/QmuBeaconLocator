@@ -30,6 +30,19 @@ void DeviceNode::processInputs(void) {
 
         previousDeviceMode = currentDeviceMode;
     }
+
+    if (
+        currentDeviceMode == DEVICE_MODE_LOCATOR && 
+        beacons.count() > 1 &&
+        buttonMain.getState() == TACTILE_STATE_SHORT_PRESS
+    ) {
+        beacons.currentBeaconIndex++;
+        if (beacons.currentBeaconIndex == beacons.count()) {
+            beacons.currentBeaconIndex = 0;
+        }
+
+        beacons.currentBeaconId = beacons.get(beacons.currentBeaconIndex)->getId();
+    }
 }
 
 void DeviceNode::execute(void) {

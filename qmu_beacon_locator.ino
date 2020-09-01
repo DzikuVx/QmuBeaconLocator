@@ -78,8 +78,6 @@ DeviceNode deviceNode(TASK_LORA_TX_MS);
 
 uint32_t nextSerialTaskTs = 0;
 uint32_t nextLoRaReadTaskTs = 0;
-uint32_t currentBeaconId = 0;
-int8_t currentBeaconIndex = -1;
 
 void onQspSuccess(uint8_t receivedChannel) {
     //If recide received a valid frame, that means it can start to talk
@@ -181,7 +179,7 @@ void loop()
     }
 
     buttonMain.loop();
-    
+
 #ifdef PIN_BUTTON_R
     buttonR.loop();
 #endif
@@ -198,7 +196,7 @@ void loop()
 
     if (nextSerialTaskTs < millis()) {
         // Serial.println(configNode.beaconId);
-        if (currentBeaconIndex >= 0) {
+        if (beacons.currentBeaconIndex >= 0) {
             // Beacon *beacon = beacons.get(currentBeaconIndex);
             // Serial.print("LAT=");  Serial.println(gps.location.lat(), 6);
             // Serial.print("LONG="); Serial.println(gps.location.lng(), 6);
@@ -209,9 +207,9 @@ void loop()
         nextSerialTaskTs = millis() + TASK_SERIAL_RATE;
     }
 
-    if (currentBeaconIndex == -1 && beacons.count() > 0) {
-        currentBeaconIndex = 0;
-        currentBeaconId = beacons.get(currentBeaconIndex)->getId();
+    if (beacons.currentBeaconIndex == -1 && beacons.count() > 0) {
+        beacons.currentBeaconIndex = 0;
+        beacons.currentBeaconId = beacons.get(beacons.currentBeaconIndex)->getId();
     }
 
     oledDisplay.loop();
