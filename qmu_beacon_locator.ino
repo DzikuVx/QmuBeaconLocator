@@ -8,9 +8,12 @@
 #include "radio_node.h"
 #include "beacons.h"
 #include "oled_display.h"
+#include "config_node.h"
+#include "utils.h"
+#include "device_node.h"
 
 //Target
-#define ARDUINO_TTGO_TBEAM_ESP32
+// #define ARDUINO_TTGO_TBEAM_ESP32
 
 #ifdef ARDUINO_TTGO_TBEAM_ESP32
     #define LORA_SS_PIN     18
@@ -50,14 +53,12 @@
     #error please select hardware
 #endif
 
-
-
 TinyGPSPlus gps;
 HardwareSerial SerialGPS(1);
 SSD1306  display(0x3c, I2C_SDA_PIN, I2C_SCL_PIN);
 OledDisplay oledDisplay(&display);
 
-QmuTactile buttonL(PIN_BUTTON_L);
+QmuTactile buttonMain(PIN_BUTTON_L);
 
 #ifdef PIN_BUTTON_R
 QmuTactile buttonR(PIN_BUTTON_R);
@@ -65,22 +66,20 @@ QmuTactile buttonR(PIN_BUTTON_R);
 
 RadioNode radioNode;
 QspConfiguration_t qsp = {};
-uint8_t bindKey[4] = {0x13, 0x27, 0x42, 0x07};
-
 Beacons beacons;
+
+ConfigNode configNode;
 
 #define TASK_SERIAL_RATE 500
 #define TASK_LORA_READ 2 // We check for new packets only from time to time, no need to do it more often
 #define TASK_LORA_TX_MS 200 // Number of ms between positio updates
 
+DeviceNode deviceNode(TASK_LORA_TX_MS);
+
 uint32_t nextSerialTaskTs = 0;
 uint32_t nextLoRaReadTaskTs = 0;
-uint32_t nextLoRaTxTaskTs = 0;
 uint32_t currentBeaconId = 0;
 int8_t currentBeaconIndex = -1;
-
-uint8_t currentDeviceMode = DEVICE_MODE_LOCATOR;
-uint8_t previousDeviceMode = DEVICE_MODE_LOCATOR;
 
 void onQspSuccess(uint8_t receivedChannel) {
     //If recide received a valid frame, that means it can start to talk
@@ -133,7 +132,12 @@ void setup()
     Serial.begin(115200);
 	SerialGPS.begin(9600, SERIAL_8N1, GPS_SERIAL_RX_PIN, GPS_SERIAL_TX_PIN);
 
-    buttonL.start();
+    configNode.begin();
+    randomSeed(analogRead(A4));
+    configNode.seed();
+    configNode.beaconId = configNode.loadBeaconId();
+
+    buttonMain.start();
 #ifdef PIN_BUTTON_R
     buttonR.start();
 #endif
@@ -150,7 +154,6 @@ void setup()
 
     oledDisplay.init();
     oledDisplay.setPage(OLED_PAGE_BEACON_LIST);
-
 }
 
 void loop()
@@ -161,7 +164,7 @@ void loop()
         int packetSize = LoRa.parsePacket();
         if (packetSize) {
             radioNode.bytesToRead = packetSize;
-            radioNode.readAndDecode(&qsp, bindKey);
+            radioNode.readAndDecode(&qsp);
         }
 
         nextLoRaReadTaskTs = millis() + TASK_LORA_READ;
@@ -177,7 +180,8 @@ void loop()
         qsp.protocolState = QSP_STATE_IDLE;
     }
 
-    buttonL.loop();
+    buttonMain.loop();
+    
 #ifdef PIN_BUTTON_R
     buttonR.loop();
 #endif
@@ -189,42 +193,11 @@ void loop()
         }
     }
 
-    /*
-     * LEFT button long press changes the device mode!
-     */
-    if (buttonL.getState() == TACTILE_STATE_LONG_PRESS) {
-        previousDeviceMode = currentDeviceMode;
-        currentDeviceMode++;
-        if (currentDeviceMode == DEVICE_MODE_LAST) {
-            currentDeviceMode = DEVICE_MODE_LOCATOR;
-        }
-    }
-
-    /*
-     * Handle device mode changes
-     */
-    if (currentDeviceMode != previousDeviceMode) {
-
-        if (currentDeviceMode == DEVICE_MODE_LOCATOR) {
-            oledDisplay.setPage(OLED_PAGE_BEACON_LIST);
-        } else {
-            oledDisplay.setPage(OLED_PAGE_I_AM_A_BEACON);
-        }
-
-        previousDeviceMode = currentDeviceMode;
-    }
-
-    if (
-        currentDeviceMode == DEVICE_MODE_BEACON &&
-        nextLoRaTxTaskTs > millis() && 
-        gps.satellites.value() > 4
-    ) {
-        // Prepare packet and send position
-
-        nextLoRaTxTaskTs = millis() + TASK_LORA_TX_MS;
-    }
+    deviceNode.execute();
+    deviceNode.processInputs();
 
     if (nextSerialTaskTs < millis()) {
+        // Serial.println(configNode.beaconId);
         if (currentBeaconIndex >= 0) {
             // Beacon *beacon = beacons.get(currentBeaconIndex);
             // Serial.print("LAT=");  Serial.println(gps.location.lat(), 6);

@@ -72,8 +72,7 @@ uint32_t RadioNode::getChannelEntryMillis(void) {
 }
 
 void RadioNode::readAndDecode(
-    QspConfiguration_t *qsp,
-    uint8_t bindKey[]
+    QspConfiguration_t *qsp
 ) {
     uint8_t tmpBuffer[MAX_PACKET_SIZE];
     /*
@@ -137,7 +136,7 @@ bool RadioNode::handleTxDoneState(bool hop) {
     }
 }
 
-void RadioNode::handleTx(QspConfiguration_t *qsp, uint8_t bindKey[]) {
+void RadioNode::handleTx(QspConfiguration_t *qsp) {
 
     if (!canTransmit) {
         return;
