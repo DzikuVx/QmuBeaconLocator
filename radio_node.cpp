@@ -172,3 +172,15 @@ void RadioNode::set(
 
     LoRa.idle();
 }
+
+void RadioNode::configure(
+    uint8_t _power, 
+    long _bandwidth,
+    uint8_t _spreadingFactor, 
+    uint8_t _codingRate
+) {
+    loraTxPower = _power; 
+    loraBandwidth = _bandwidth;
+    loraSpreadingFactor = _spreadingFactor; 
+    loraCodingRate = _codingRate;
+}

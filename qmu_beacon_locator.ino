@@ -12,6 +12,11 @@
 #include "utils.h"
 #include "device_node.h"
 
+#define LORA_TX_POWER 10
+#define LORA_BANDWIDTH 500000
+#define LORA_SPREADING_FACTOR 7
+#define LORA_CODING_RATE 6
+
 //Target
 // #define ARDUINO_TTGO_TBEAM_ESP32
 
@@ -142,6 +147,13 @@ void setup()
 
     qsp.onSuccessCallback = onQspSuccess;
     qsp.onFailureCallback = onQspFailure;
+
+    radioNode.configure(
+        LORA_TX_POWER, 
+        LORA_BANDWIDTH, 
+        LORA_SPREADING_FACTOR, 
+        LORA_CODING_RATE
+    );
 
     SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, LORA_SS_PIN);
     LoRa.setSPIFrequency(4E6);
