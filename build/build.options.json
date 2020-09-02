@@ -1,0 +1,11 @@
+{
+  "additionalFiles": "\\OLEDDisplay.h,\\OLEDDisplayFonts.h,\\OLEDDisplayUi.cpp,\\OLEDDisplayUi.h,\\SSD1306.h,\\SSD1306Brzo.h,\\SSD1306Spi.h,\\SSD1306Wire.h,\\beacon.cpp,\\beacon.h,\\beacons.cpp,\\beacons.h,\\config_node.cpp,\\config_node.h,\\device_node.cpp,\\device_node.h,\\lora.cpp,\\lora.h,\\oled_display.cpp,\\oled_display.h,\\qsp.cpp,\\qsp.h,\\radio_node.cpp,\\radio_node.h,\\utils.cpp,\\utils.h,\\variables.h",
+  "builtInLibrariesFolders": "C:\\Program Files (x86)\\Arduino\\libraries",
+  "customBuildProperties": "build.path=c:\\Users\\pspyc\\Documents\\Arduino\\QmuBeaconLocator\\build,build.warn_data_percentage=75",
+  "fqbn": "espressif:esp32:esp32:PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none",
+  "hardwareFolders": "C:\\Program Files (x86)\\Arduino\\hardware,C:\\Users\\pspyc\\Documents\\Arduino\\hardware",
+  "otherLibrariesFolders": "C:\\Users\\pspyc\\Documents\\Arduino\\libraries",
+  "runtime.ide.version": "10809",
+  "sketchLocation": "c:\\Users\\pspyc\\Documents\\Arduino\\QmuBeaconLocator\\OLEDDisplay.cpp",
+  "toolsFolders": "C:\\Program Files (x86)\\Arduino\\tools-builder,C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr"
+}

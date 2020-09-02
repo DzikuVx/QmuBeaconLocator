@@ -110,19 +110,36 @@ void onQspSuccess(uint8_t receivedChannel) {
     if (qsp.frameId == QSP_FRAME_COORDS) {
         long tmp;
 
-        tmp = qsp.payload[4];
-        tmp += qsp.payload[5] << 8;
-        tmp += qsp.payload[6] << 16;
-        tmp += qsp.payload[7] << 24;
+        //We have a valid position data
+        if (qsp.payload[19] & POSITION_FLAG_POSITION_VALID) {
+            tmp = qsp.payload[4];
+            tmp += qsp.payload[5] << 8;
+            tmp += qsp.payload[6] << 16;
+            tmp += qsp.payload[7] << 24;
 
-        beacon->setLat(tmp / 10000000.0d);
+            beacon->setLat(tmp / 10000000.0d);
 
-        tmp = qsp.payload[8];
-        tmp += qsp.payload[9] << 8;
-        tmp += qsp.payload[10] << 16;
-        tmp += qsp.payload[11] << 24;
+            tmp = qsp.payload[8];
+            tmp += qsp.payload[9] << 8;
+            tmp += qsp.payload[10] << 16;
+            tmp += qsp.payload[11] << 24;
 
-        beacon->setLon(tmp / 10000000.0d);
+            beacon->setLon(tmp / 10000000.0d);
+        }
+
+        if (qsp.payload[19] & POSITION_FLAG_ALTITUDE_VALID) {
+            tmp = qsp.payload[12];
+            tmp += qsp.payload[13] << 8;
+            tmp += qsp.payload[14] << 16;
+            tmp += qsp.payload[15] << 24;
+
+            beacon->setAlt(tmp / 100.0d);
+        }
+
+        beacon->setAction(qsp.payload[18]);
+
+        //TODO fill flags
+        //TODO fill course        
     }
 }
 
@@ -208,11 +225,12 @@ void loop()
 
     if (nextSerialTaskTs < millis()) {
         // Serial.println(configNode.beaconId);
+        // Serial.println(gps.altitude.meters());
         if (beacons.currentBeaconIndex >= 0) {
-            // Beacon *beacon = beacons.get(currentBeaconIndex);
-            // Serial.print("LAT=");  Serial.println(gps.location.lat(), 6);
-            // Serial.print("LONG="); Serial.println(gps.location.lng(), 6);
-            // Serial.print("ALT=");  Serial.println(gps.altitude.meters());
+            // Beacon *beacon = beacons.get(beacons.currentBeaconIndex);
+            // Serial.print("LAT=");  Serial.println(beacon->getLat(), 6);
+            // Serial.print("LONG="); Serial.println(beacon->getLon(), 6);
+            // Serial.print("ALT=");  Serial.println(beacon->getAlt());
             // Serial.print("RSSI=");  Serial.println(beacon->getRssi());
             // Serial.print("SNR=");  Serial.println(beacon->getSnr());
         }
