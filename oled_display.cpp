@@ -92,7 +92,7 @@ void OledDisplay::renderPageBeaconList() {
 
         } else {
             _display->setFont(ArialMT_Plain_16);
-            _display->drawString(0, 34, "No distance");
+            _display->drawString(0, 32, "No distance");
         }
 
         _display->setFont(ArialMT_Plain_10);
@@ -114,8 +114,10 @@ void OledDisplay::renderPageIamBeacon() {
 
     renderHeader("I'm a beacon");
 
-    _display->drawString(0, 30, "TX mode");
+    _display->setFont(ArialMT_Plain_16);
+    _display->drawString(0, 32, "Transmitting");
     
+    _display->setFont(ArialMT_Plain_10);
     _display->drawString(0, 54, String(gps.location.lat(), 5));
     _display->drawString(64, 54, String(gps.location.lng(), 5));
     
