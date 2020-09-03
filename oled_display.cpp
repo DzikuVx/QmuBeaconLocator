@@ -36,6 +36,9 @@ void OledDisplay::page() {
         case OLED_PAGE_BEACON_LIST:
             renderPageBeaconList();
             break;
+        case OLED_PAGE_LOOK_AT_ME:
+            renderPageLookAtMe();
+            break;
         case OLED_PAGE_I_AM_A_BEACON:
             renderPageIamBeacon();
             break;
@@ -116,6 +119,26 @@ void OledDisplay::renderPageIamBeacon() {
 
     _display->setFont(ArialMT_Plain_16);
     _display->drawString(0, 32, "Transmitting");
+    
+    _display->setFont(ArialMT_Plain_10);
+    _display->drawString(0, 54, String(gps.location.lat(), 5));
+    _display->drawString(64, 54, String(gps.location.lng(), 5));
+    
+    _display->display();
+}
+
+void OledDisplay::renderPageLookAtMe() {
+    _display->clear();
+
+    renderHeader("Look at me!");
+
+    if (deviceNode.isActionEnabled()) {
+        _display->setFont(ArialMT_Plain_16);
+        _display->drawString(0, 32, "Active");
+    } else {
+        _display->setFont(ArialMT_Plain_10);
+        _display->drawString(0, 32, "Short press to start");
+    }
     
     _display->setFont(ArialMT_Plain_10);
     _display->drawString(0, 54, String(gps.location.lat(), 5));

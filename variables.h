@@ -51,6 +51,7 @@ enum coordsFrameActions {
     POSITION_ACTION_FORMATION_BEHIND    = 4,
     POSITION_ACTION_FORMATION_LEFT      = 5,
     POSITION_ACTION_FORMATION_RIGHT     = 6,
+    POSITION_ACTION_LOOK_AT_ME          = 7,
 };
 
 enum dataStates {

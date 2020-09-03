@@ -11,9 +11,15 @@ void DeviceNode::begin(void) {
     if (currentDeviceMode >= DEVICE_MODE_LAST) {
         currentDeviceMode = DEVICE_MODE_LOCATOR;
         configNode.save(EEPROM_ADDRESS_DEVICE_MODE, currentDeviceMode);
+        configNode.commit();
     }
 
-    previousDeviceMode = DEVICE_MODE_LAST;
+    previousDeviceMode = currentDeviceMode;
+
+    _actionEnabled = configNode.load(EEPROM_ADDRESS_ACTION_ENABLED);
+    _previousActionEnabled = _actionEnabled;
+
+    _forcedInit = true;
 }
 
 void DeviceNode::processInputs(void) {
@@ -28,20 +34,35 @@ void DeviceNode::processInputs(void) {
         }
     }
 
+    if (currentDeviceMode == DEVICE_MODE_LOOK_AT_ME) {
+
+        if (buttonMain.getState() == TACTILE_STATE_SHORT_PRESS) {
+            _previousActionEnabled = _actionEnabled;
+            _actionEnabled = !_actionEnabled;
+        }
+
+    }
+
     /*
      * Handle device mode changes
      */
-    if (currentDeviceMode != previousDeviceMode) {
-
-        if (currentDeviceMode == DEVICE_MODE_LOCATOR) {
-            oledDisplay.setPage(OLED_PAGE_BEACON_LIST);
-        } else {
-            oledDisplay.setPage(OLED_PAGE_I_AM_A_BEACON);
-        }
+    if (currentDeviceMode != previousDeviceMode && !_forcedInit) {
+        
+        _actionEnabled = false;
+        _previousActionEnabled = false;
 
         configNode.save(EEPROM_ADDRESS_DEVICE_MODE, currentDeviceMode);
+        configNode.save(EEPROM_ADDRESS_ACTION_ENABLED, _actionEnabled);
+        configNode.commit();
 
         previousDeviceMode = currentDeviceMode;
+    }
+
+    if (_actionEnabled != _previousActionEnabled) {
+        configNode.save(EEPROM_ADDRESS_ACTION_ENABLED, _actionEnabled);
+        configNode.commit();
+
+        _previousActionEnabled = _actionEnabled;
     }
 
     if (
@@ -56,6 +77,8 @@ void DeviceNode::processInputs(void) {
 
         beacons.currentBeaconId = beacons.get(beacons.currentBeaconIndex)->getId();
     }
+
+    _forcedInit = false;
 }
 
 void DeviceNode::execute(void) {
@@ -119,6 +142,8 @@ void DeviceNode::execute(void) {
             //Position 18 is for action
             if (currentDeviceMode == DEVICE_MODE_BEACON) {
                 qsp.payload[18] = POSITION_ACTION_NONE;
+            } else if (currentDeviceMode == DEVICE_MODE_LOOK_AT_ME && _actionEnabled) {
+                qsp.payload[18] = POSITION_ACTION_LOOK_AT_ME;
             } else {
                 qsp.payload[18] = POSITION_ACTION_NONE;
             }   
@@ -165,4 +190,12 @@ void DeviceNode::execute(void) {
         radioNode.handleTx(&qsp);
     }
 
+}
+
+bool DeviceNode::isActionEnabled(void) {
+    return _actionEnabled;
+}
+
+uint8_t DeviceNode::getDeviceMode(void) {
+    return currentDeviceMode;
 }

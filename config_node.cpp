@@ -61,5 +61,8 @@ uint8_t ConfigNode::load(int address) {
 
 void ConfigNode::save(int address, uint8_t value) {
     EEPROM.write(address, value);
+}
+
+void ConfigNode::commit(void) {
     EEPROM.commit();
 }

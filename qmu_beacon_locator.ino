@@ -223,6 +223,14 @@ void loop()
     deviceNode.execute();
     deviceNode.processInputs();
 
+    if (deviceNode.getDeviceMode() == DEVICE_MODE_LOCATOR) {
+        oledDisplay.setPage(OLED_PAGE_BEACON_LIST);
+    } else if (deviceNode.getDeviceMode() == DEVICE_MODE_LOOK_AT_ME) {
+        oledDisplay.setPage(OLED_PAGE_LOOK_AT_ME);
+    } else {
+        oledDisplay.setPage(OLED_PAGE_I_AM_A_BEACON);
+    }
+
     if (nextSerialTaskTs < millis()) {
         // Serial.println(configNode.beaconId);
         // Serial.println(gps.altitude.meters());
