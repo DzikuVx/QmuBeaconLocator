@@ -38,7 +38,7 @@ void qspInitCrc(QspConfiguration_t *qsp, uint8_t bindKey[]) {
     }
 }
 
-void qspDecodeIncomingFrame(
+qspDecodingStatus_e qspDecodeIncomingFrame(
     QspConfiguration_t *qsp, 
     uint8_t incomingByte,
     uint8_t bindKey[]
@@ -59,6 +59,13 @@ void qspDecodeIncomingFrame(
         qspComputeCrc(qsp, incomingByte);
 
         qsp->frameId = (incomingByte >> 4) & 0x0f;
+
+        //If frameID makes no sense, mark it all as faulty frame
+        if (qsp->frameId >= QSP_FRAME_COUNT) {
+            qsp->protocolState = QSP_STATE_IDLE;
+            return QSP_DECODING_STATUS_ERROR;
+        }
+
         payloadLength = qspFrameLengths[qsp->frameId];
         receivedChannel = incomingByte & 0x0f;
         qsp->protocolState = QSP_STATE_FRAME_TYPE_RECEIVED;
@@ -93,6 +100,8 @@ void qspDecodeIncomingFrame(
         // In both cases switch to listening for next preamble
         qsp->protocolState = QSP_STATE_IDLE;
     }
+
+    return QSP_DECODING_STATUS_OK;
 }
 
 /**
@@ -123,5 +132,5 @@ void qspEncodeFrame(
     }
 
     buffer[qsp->payloadLength + 1] = qsp->crc;
-    *size = qsp->payloadLength + 2; //Total length of QSP frame
+    *size = qspFrameLengths[qsp->frameToSend] + 2; //Total length of QSP frame
 }

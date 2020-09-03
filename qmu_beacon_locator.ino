@@ -76,7 +76,7 @@ Beacons beacons;
 ConfigNode configNode;
 
 #define TASK_SERIAL_RATE 500
-#define TASK_LORA_READ 2 // We check for new packets only from time to time, no need to do it more often
+#define TASK_LORA_READ 1 // We check for new packets only from time to time, no need to do it more often
 #define TASK_LORA_TX_MS 200 // Number of ms between positio updates
 
 DeviceNode deviceNode(TASK_LORA_TX_MS);
@@ -96,8 +96,6 @@ void onQspSuccess(uint8_t receivedChannel) {
     beaconId += qsp.payload[1] << 8;
     beaconId += qsp.payload[0];
     
-    // Serial.print("Beacon="); Serial.println(beaconId);
-
     Beacon *beacon = beacons.getBeacon(beaconId);
 
     /*

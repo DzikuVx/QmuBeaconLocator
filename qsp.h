@@ -2,7 +2,7 @@
 #include "variables.h"
 
 void qspComputeCrc(QspConfiguration_t *qsp, uint8_t dataByte);
-void qspDecodeIncomingFrame(
+qspDecodingStatus_e qspDecodeIncomingFrame(
     QspConfiguration_t *qsp, 
     uint8_t incomingByte,
     uint8_t bindKey[]

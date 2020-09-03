@@ -71,10 +71,25 @@ uint32_t RadioNode::getChannelEntryMillis(void) {
     return _channelEntryMillis;
 }
 
+void RadioNode::flush() {
+    LoRa.sleep();
+    LoRa.receive();
+    radioState = RADIO_STATE_RX;
+    bytesToRead = NO_DATA_TO_READ;
+}
+
 void RadioNode::readAndDecode(
     QspConfiguration_t *qsp
 ) {
+
+    // if more data than length of the buffer, flush it
+    if (bytesToRead > MAX_PACKET_SIZE) {
+        flush();
+        return;
+    }
+
     uint8_t tmpBuffer[MAX_PACKET_SIZE];
+
     /*
      * There is data to be read from radio!
      */
@@ -82,7 +97,14 @@ void RadioNode::readAndDecode(
         LoRa.read(tmpBuffer, bytesToRead);
 
         for (int i = 0; i < bytesToRead; i++) {
-            qspDecodeIncomingFrame(qsp, tmpBuffer[i], bindKey);
+            qspDecodingStatus_e status = qspDecodeIncomingFrame(qsp, tmpBuffer[i], bindKey);
+
+            if (status != QSP_DECODING_STATUS_OK) {
+                Serial.println("Flushing - damaged frameID");
+                flush();
+                return;
+            }
+
         }
 
         //After reading, flush radio buffer, we have no need for whatever might be over there

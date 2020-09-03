@@ -52,6 +52,7 @@ class RadioNode {
             uint8_t codingRate,
             long frequency
         );
+        void flush(void);
         uint8_t _channel = 0;
         uint32_t _channelEntryMillis = 0;
         uint32_t nextTxCheckMillis = 0;

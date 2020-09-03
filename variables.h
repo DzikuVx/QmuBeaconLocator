@@ -24,6 +24,11 @@ enum qspFrames {
     QSP_FRAME_COUNT
 };
 
+typedef enum qspDecodingStatus {
+    QSP_DECODING_STATUS_OK,
+    QSP_DECODING_STATUS_ERROR,
+} qspDecodingStatus_e;
+
 //Length of the payload
 static const uint8_t qspFrameLengths[QSP_FRAME_COUNT] = {
     4, //QSP_FRAME_IDENT
