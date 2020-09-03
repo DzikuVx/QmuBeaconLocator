@@ -171,7 +171,7 @@ void setup()
     );
 
     SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, LORA_SS_PIN);
-    LoRa.setSPIFrequency(4E6);
+    LoRa.setSPIFrequency(2E6);
     radioNode.init(LORA_SS_PIN, LORA_RST_PIN, LORA_DI0_PIN, NULL);
     radioNode.reset();
     radioNode.canTransmit = true;
