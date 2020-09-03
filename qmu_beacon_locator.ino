@@ -155,6 +155,8 @@ void setup()
     configNode.seed();
     configNode.beaconId = configNode.loadBeaconId();
 
+    deviceNode.begin();
+
     buttonMain.start();
 #ifdef PIN_BUTTON_R
     buttonR.start();

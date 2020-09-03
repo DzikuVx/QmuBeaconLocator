@@ -52,4 +52,14 @@ void ConfigNode::saveBeaconId(long key) {
     EEPROM.write(EEPROM_ADDRESS_BEACONID_2, tmp[2]);
     EEPROM.write(EEPROM_ADDRESS_BEACONID_3, tmp[3]);
     EEPROM.write(EEPROM_ADDRESS_BEACONID_KEY_SEEDED, 0xf1);
+    EEPROM.commit();
+}
+
+uint8_t ConfigNode::load(int address) {
+    return EEPROM.read(address);
+}
+
+void ConfigNode::save(int address, uint8_t value) {
+    EEPROM.write(address, value);
+    EEPROM.commit();
 }

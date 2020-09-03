@@ -5,6 +5,17 @@ DeviceNode::DeviceNode(uint16_t _taskTxMs) {
     taskTxMs = _taskTxMs;
 }
 
+void DeviceNode::begin(void) {
+    currentDeviceMode = configNode.load(EEPROM_ADDRESS_DEVICE_MODE);
+
+    if (currentDeviceMode >= DEVICE_MODE_LAST) {
+        currentDeviceMode = DEVICE_MODE_LOCATOR;
+        configNode.save(EEPROM_ADDRESS_DEVICE_MODE, currentDeviceMode);
+    }
+
+    previousDeviceMode = DEVICE_MODE_LAST;
+}
+
 void DeviceNode::processInputs(void) {
     /*
      * Main (LEFT) button long press changes the device mode!
@@ -27,6 +38,8 @@ void DeviceNode::processInputs(void) {
         } else {
             oledDisplay.setPage(OLED_PAGE_I_AM_A_BEACON);
         }
+
+        configNode.save(EEPROM_ADDRESS_DEVICE_MODE, currentDeviceMode);
 
         previousDeviceMode = currentDeviceMode;
     }

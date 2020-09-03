@@ -25,6 +25,7 @@ enum deviceModes {
 class DeviceNode {
     public:
         DeviceNode(uint16_t taskTxMs);
+        void begin(void);
         void processInputs(void);
         void execute(void);
     private:

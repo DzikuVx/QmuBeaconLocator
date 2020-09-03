@@ -15,6 +15,7 @@ enum platformConfigMemoryLayout {
     EEPROM_ADDRESS_BEACONID_1, 
     EEPROM_ADDRESS_BEACONID_2, 
     EEPROM_ADDRESS_BEACONID_3,
+    EEPROM_ADDRESS_DEVICE_MODE,
     CONFIG_NODE_LAST_BYTE 
 }; 
 
@@ -26,6 +27,8 @@ class ConfigNode {
         void seed(void);
         long loadBeaconId(void);
         void saveBeaconId(long key);
+        uint8_t load(int address);
+        void save(int address, uint8_t value);
         long beaconId;
 };
 
