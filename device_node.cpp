@@ -86,7 +86,10 @@ void DeviceNode::execute(void) {
     bool transmitPayload = false;
 
     if (
-        currentDeviceMode == DEVICE_MODE_BEACON &&
+        (
+            currentDeviceMode == DEVICE_MODE_BEACON ||
+            currentDeviceMode == DEVICE_MODE_LOOK_AT_ME
+        ) &&
         nextLoRaTxTaskTs < millis() && 
         qsp.protocolState == QSP_STATE_IDLE && 
         radioNode.radioState == RADIO_STATE_RX
@@ -139,14 +142,18 @@ void DeviceNode::execute(void) {
             }
             int16ToBuf(qsp.payload, 16, writeValue);
 
-            //Position 18 is for action
+            //Position 18 is for action and action status
+            // bits 0-6 hold action type
+            // bit 7 holds if enabled
             if (currentDeviceMode == DEVICE_MODE_BEACON) {
-                qsp.payload[18] = POSITION_ACTION_NONE;
-            } else if (currentDeviceMode == DEVICE_MODE_LOOK_AT_ME && _actionEnabled) {
-                qsp.payload[18] = POSITION_ACTION_LOOK_AT_ME;
+                qsp.payload[18] = POSITION_ACTION_NONE & 0x7F;
+            } else if (currentDeviceMode == DEVICE_MODE_LOOK_AT_ME) {
+                qsp.payload[18] = POSITION_ACTION_LOOK_AT_ME & 0x7F;
             } else {
-                qsp.payload[18] = POSITION_ACTION_NONE;
+                qsp.payload[18] = POSITION_ACTION_NONE & 0x7F;
             }   
+
+            qsp.payload[18] |= ((uint8_t) _actionEnabled) << 7;
 
             //Position 19 is for flags
             qsp.payload[19] = POSITION_FLAG_NONE;

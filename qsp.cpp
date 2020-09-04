@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "variables.h"
+#include "qsp.h"
 
 uint8_t crc8_dvb_s2(uint8_t crc, uint8_t a)
 {
