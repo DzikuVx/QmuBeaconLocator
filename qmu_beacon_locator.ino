@@ -153,7 +153,22 @@ void onQspSuccess(uint8_t receivedChannel) {
         beacon->setAction(qsp.payload[18]);
         beacon->setFlags(qsp.payload[19]);
     } else if (qsp.frameId == QSP_FRAME_MISC) {
-        beacon->setSats(qsp.payload[16]);
+
+        //HDOP
+        tmp = qsp.payload[4];
+        tmp += qsp.payload[5] << 8;
+        tmp += qsp.payload[6] << 16;
+        tmp += qsp.payload[7] << 24;
+        beacon->setHdop(tmp);
+
+        //Speed
+        tmp = qsp.payload[8];
+        tmp += qsp.payload[9] << 8;
+        tmp += qsp.payload[10] << 16;
+        tmp += qsp.payload[11] << 24;
+        beacon->setSpeed(tmp / 100.0f);
+
+        beacon->setSats(qsp.payload[12]);
     }
 }
 
@@ -250,17 +265,17 @@ void loop()
     if (nextSerialTaskTs < millis()) {
         if (beacons.currentBeaconIndex >= 0) {
             Beacon *beacon = beacons.get(beacons.currentBeaconIndex);
-            // Serial.print("LAT     = ");  Serial.println(beacon->getLat(), 6);
-            // Serial.print("LONG    = "); Serial.println(beacon->getLon(), 6);
-            // Serial.print("COURSE  = "); Serial.println(beacon->getCourse(), 3);
-            // Serial.print("ALT     = ");  Serial.println(beacon->getAlt());
-            // Serial.print("Action  = ");  Serial.println(beacon->getActionRaw());
-            // Serial.print("Flags   = ");  Serial.println(beacon->getFlagsRaw());
-            // Serial.print("Sats    = ");  Serial.println(beacon->getSats());
-            // Serial.print("HDOP    = ");  Serial.println(beacon->getHdop());
-            // Serial.print("Speed   = ");  Serial.println(beacon->getHdop());
-            // Serial.print("RSSI    = ");  Serial.println(beacon->getRssi());
-            // Serial.print("SNR     = ");  Serial.println(beacon->getSnr());
+            Serial.print("LAT     = ");  Serial.println(beacon->getLat(), 6);
+            Serial.print("LONG    = "); Serial.println(beacon->getLon(), 6);
+            Serial.print("COURSE  = "); Serial.println(beacon->getCourse(), 3);
+            Serial.print("ALT     = ");  Serial.println(beacon->getAlt());
+            Serial.print("Action  = ");  Serial.println(beacon->getActionRaw());
+            Serial.print("Flags   = ");  Serial.println(beacon->getFlagsRaw());
+            Serial.print("Sats    = ");  Serial.println(beacon->getSats());
+            Serial.print("HDOP    = ");  Serial.println(beacon->getHdop());
+            Serial.print("Speed   = ");  Serial.println(beacon->getSpeed());
+            Serial.print("RSSI    = ");  Serial.println(beacon->getRssi());
+            Serial.print("SNR     = ");  Serial.println(beacon->getSnr());
         }
         nextSerialTaskTs = millis() + TASK_SERIAL_RATE;
     }
