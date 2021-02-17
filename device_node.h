@@ -19,8 +19,8 @@ extern TinyGPSPlus gps;
 enum deviceModes {
     DEVICE_MODE_LOCATOR = 0,
     DEVICE_MODE_BEACON,
+    DEVICE_MODE_LAST,
     DEVICE_MODE_LOOK_AT_ME,
-    DEVICE_MODE_LAST
 };
 
 class DeviceNode {
