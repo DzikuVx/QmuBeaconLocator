@@ -17,6 +17,8 @@
 #define MAX_PACKET_SIZE 34 //Max theorethical size of valid packet
 #define NO_DATA_TO_READ -1
 
+#define GPS_SATS_FOR_FIX 5
+
 enum qspFrames {
     QSP_FRAME_IDENT = 0,
     QSP_FRAME_COORDS,
@@ -24,10 +26,29 @@ enum qspFrames {
     QSP_FRAME_COUNT
 };
 
+//Length of the payload
 static const uint8_t qspFrameLengths[QSP_FRAME_COUNT] = {
     4, //QSP_FRAME_IDENT
-    12, //QSP_FRAME_COORDS
-    17 //QSP_FRAME_MISC
+    20, //QSP_FRAME_COORDS
+    13 //QSP_FRAME_MISC
+};
+
+enum coordsFrameFlags {
+    POSITION_FLAG_NONE              = 0,        //  0
+    POSITION_FLAG_HEADING_VALID     = 1 << 0,   //  1
+    POSITION_FLAG_POSITION_VALID    = 1 << 1,   //  2
+    POSITION_FLAG_ALTITUDE_VALID    = 1 << 2,   //  4   
+};
+
+enum coordsFrameActions {
+    POSITION_ACTION_NONE                = 0,
+    POSITION_ACTION_FOLLOW              = 1,
+    POSITION_ACTION_ORBIT               = 2,
+    POSITION_ACTION_FORMATION_AHEAD     = 3,
+    POSITION_ACTION_FORMATION_BEHIND    = 4,
+    POSITION_ACTION_FORMATION_LEFT      = 5,
+    POSITION_ACTION_FORMATION_RIGHT     = 6,
+    POSITION_ACTION_LOOK_AT_ME          = 7,
 };
 
 enum dataStates {

@@ -13,17 +13,14 @@ void OledDisplay::init() {
 }
 
 void OledDisplay::loop() {
-    page(pageSequence[_mainPageSequenceIndex]);
+    page();
 }
 
-void OledDisplay::nextPage() {
-    _mainPageSequenceIndex++;
-    if (_mainPageSequenceIndex == OLED_DISPLAY_PAGE_COUNT) {
-        _mainPageSequenceIndex = 0;
-    }
+void OledDisplay::setPage(uint8_t page) {
+    _page = page;
 }
 
-void OledDisplay::page(uint8_t page) {
+void OledDisplay::page() {
 
     static uint32_t lastUpdate = 0;
 
@@ -34,16 +31,18 @@ void OledDisplay::page(uint8_t page) {
 
     _forceDisplay = false;
 
-    switch (page) {
+    switch (_page) {
         
-        case OLED_PAGE_DISTANCE:
-            renderPageDistance();
+        case OLED_PAGE_BEACON_LIST:
+            renderPageBeaconList();
             break;
-        case OLED_PAGE_BEACON:
-            renderPageBeacon();
+        case OLED_PAGE_LOOK_AT_ME:
+            renderPageLookAtMe();
+            break;
+        case OLED_PAGE_I_AM_A_BEACON:
+            renderPageIamBeacon();
             break;
     }
-    _page = page;
 
     lastUpdate = millis();
 }
@@ -55,15 +54,15 @@ void OledDisplay::renderHeader(String title) {
     _display->drawString(90, 0, String(gps.satellites.value()) + " sats");
 }
 
-void OledDisplay::renderPageDistance() {
+void OledDisplay::renderPageBeaconList() {
     _display->clear();
 
-    renderHeader("Beacon " + String(currentBeaconIndex + 1) + "/" + String(beacons.count()));
+    renderHeader("Beacon " + String(beacons.currentBeaconIndex + 1) + "/" + String(beacons.count()));
 
     if (beacons.count() > 0) {
         _display->setFont(ArialMT_Plain_10);
 
-        Beacon *beacon = beacons.getBeacon(currentBeaconId);
+        Beacon *beacon = beacons.getBeacon(beacons.currentBeaconId);
         _display->drawString(0, 10, "ID: " + String(beacon->getId(), HEX));
         _display->drawString(70, 10, "RSSI: " + String(beacon->getRssi()));
 
@@ -78,7 +77,7 @@ void OledDisplay::renderPageDistance() {
 
         _display->drawString(70, 20, "T: -" + contactString);
 
-        if (beacon->hasPos() && gps.satellites.value() > 5) {
+        if (beacon->hasPos() && gps.satellites.value() >= GPS_SATS_FOR_FIX) {
             _display->setFont(ArialMT_Plain_16);
 
             double dst = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), beacon->getLat(), beacon->getLon());
@@ -96,7 +95,7 @@ void OledDisplay::renderPageDistance() {
 
         } else {
             _display->setFont(ArialMT_Plain_16);
-            _display->drawString(0, 34, "No distance");
+            _display->drawString(0, 32, "No distance");
         }
 
         _display->setFont(ArialMT_Plain_10);
@@ -113,11 +112,38 @@ void OledDisplay::renderPageDistance() {
     _display->display();
 }
 
-void OledDisplay::renderPageBeacon() {
+void OledDisplay::renderPageIamBeacon() {
     _display->clear();
 
-    renderHeader("Locator");
+    renderHeader("I'm a beacon");
 
+    _display->setFont(ArialMT_Plain_16);
+    _display->drawString(0, 32, "Transmitting");
+
+    _display->setFont(ArialMT_Plain_10);
+    _display->drawString(0, 54, String(gps.location.lat(), 5));
+    _display->drawString(64, 54, String(gps.location.lng(), 5));
+    _display->drawString(0, 16, "My ID " + String(configNode.beaconId, HEX));
+    
+    _display->display();
+}
+
+void OledDisplay::renderPageLookAtMe() {
+    _display->clear();
+
+    renderHeader("Look at me!");
+
+    if (deviceNode.isActionEnabled()) {
+        _display->setFont(ArialMT_Plain_16);
+        _display->drawString(0, 32, "Active");
+    } else {
+        _display->setFont(ArialMT_Plain_10);
+        _display->drawString(0, 32, "Short press to start");
+    }
+    
+    _display->setFont(ArialMT_Plain_10);
+    _display->drawString(0, 54, String(gps.location.lat(), 5));
+    _display->drawString(64, 54, String(gps.location.lng(), 5));
     
     _display->display();
 }

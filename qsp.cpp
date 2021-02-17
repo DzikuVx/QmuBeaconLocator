@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "variables.h"
+#include "qsp.h"
 
 uint8_t crc8_dvb_s2(uint8_t crc, uint8_t a)
 {
@@ -38,9 +39,10 @@ void qspInitCrc(QspConfiguration_t *qsp, uint8_t bindKey[]) {
     }
 }
 
-void qspDecodeIncomingFrame(
+qspDecodingStatus_e qspDecodeIncomingFrame(
     QspConfiguration_t *qsp, 
-    uint8_t incomingByte
+    uint8_t incomingByte,
+    uint8_t bindKey[]
 ) {
     static uint8_t frameId;
     static uint8_t payloadLength;
@@ -49,8 +51,7 @@ void qspDecodeIncomingFrame(
 
     if (qsp->protocolState == QSP_STATE_IDLE)
     {
-        // qspInitCrc(qsp, bindKey);
-        qsp->crc = 0;
+        qspInitCrc(qsp, bindKey);
         qspClearPayload(qsp);
         receivedPayload = 0;
         qsp->frameDecodingStartedAt = millis();
@@ -59,6 +60,13 @@ void qspDecodeIncomingFrame(
         qspComputeCrc(qsp, incomingByte);
 
         qsp->frameId = (incomingByte >> 4) & 0x0f;
+
+        //If frameID makes no sense, mark it all as faulty frame
+        if (qsp->frameId >= QSP_FRAME_COUNT) {
+            qsp->protocolState = QSP_STATE_IDLE;
+            return QSP_DECODING_STATUS_ERROR;
+        }
+
         payloadLength = qspFrameLengths[qsp->frameId];
         receivedChannel = incomingByte & 0x0f;
         qsp->protocolState = QSP_STATE_FRAME_TYPE_RECEIVED;
@@ -93,6 +101,8 @@ void qspDecodeIncomingFrame(
         // In both cases switch to listening for next preamble
         qsp->protocolState = QSP_STATE_IDLE;
     }
+
+    return QSP_DECODING_STATUS_OK;
 }
 
 /**
@@ -106,8 +116,7 @@ void qspEncodeFrame(
     uint8_t bindKey[]
 ) {
     //Salt CRC with bind key
-    // qspInitCrc(qsp, bindKey);
-    qsp->crc = 0;
+    qspInitCrc(qsp, bindKey);
 
     //Write frame type and length
     // We are no longer sending payload length, so 4 bits are now free for other usages
@@ -124,5 +133,5 @@ void qspEncodeFrame(
     }
 
     buffer[qsp->payloadLength + 1] = qsp->crc;
-    *size = qsp->payloadLength + 2; //Total length of QSP frame
+    *size = qspFrameLengths[qsp->frameToSend] + 2; //Total length of QSP frame
 }
