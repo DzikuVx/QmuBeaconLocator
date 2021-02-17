@@ -109,7 +109,7 @@ void DeviceNode::execute(void) {
 
         if (frameToSend == QSP_FRAME_COORDS) {
 
-            const bool havePosition = (gps.satellites.value() > 5) ? true : false;
+            const bool havePosition = (gps.satellites.value() >= GPS_SATS_FOR_FIX) ? true : false;
             const bool haveCourse = (gps.speed.kmph() > 5) ? true : false;
 
             int32ToBuf(qsp.payload, 0, configNode.beaconId);

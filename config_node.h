@@ -31,7 +31,7 @@ class ConfigNode {
         uint8_t load(int address);
         void save(int address, uint8_t value);
         void commit(void);
-        long beaconId;
+        unsigned long beaconId;
 };
 
 #endif

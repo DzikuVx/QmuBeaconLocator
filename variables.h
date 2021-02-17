@@ -17,6 +17,8 @@
 #define MAX_PACKET_SIZE 34 //Max theorethical size of valid packet
 #define NO_DATA_TO_READ -1
 
+#define GPS_SATS_FOR_FIX 5
+
 enum qspFrames {
     QSP_FRAME_IDENT = 0,
     QSP_FRAME_COORDS,

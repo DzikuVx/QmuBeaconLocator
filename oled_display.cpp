@@ -77,7 +77,7 @@ void OledDisplay::renderPageBeaconList() {
 
         _display->drawString(70, 20, "T: -" + contactString);
 
-        if (beacon->hasPos() && gps.satellites.value() > 5) {
+        if (beacon->hasPos() && gps.satellites.value() >= GPS_SATS_FOR_FIX) {
             _display->setFont(ArialMT_Plain_16);
 
             double dst = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), beacon->getLat(), beacon->getLon());
@@ -119,10 +119,11 @@ void OledDisplay::renderPageIamBeacon() {
 
     _display->setFont(ArialMT_Plain_16);
     _display->drawString(0, 32, "Transmitting");
-    
+
     _display->setFont(ArialMT_Plain_10);
     _display->drawString(0, 54, String(gps.location.lat(), 5));
     _display->drawString(64, 54, String(gps.location.lng(), 5));
+    _display->drawString(0, 16, "My ID " + String(configNode.beaconId, HEX));
     
     _display->display();
 }
