@@ -248,21 +248,19 @@ void loop()
     }
 
     if (nextSerialTaskTs < millis()) {
-        // Serial.println(configNode.beaconId);
-        // Serial.println(gps.altitude.meters());
         if (beacons.currentBeaconIndex >= 0) {
             Beacon *beacon = beacons.get(beacons.currentBeaconIndex);
-            Serial.print("LAT     = ");  Serial.println(beacon->getLat(), 6);
-            Serial.print("LONG    = "); Serial.println(beacon->getLon(), 6);
-            Serial.print("COURSE  = "); Serial.println(beacon->getCourse(), 3);
-            Serial.print("ALT     = ");  Serial.println(beacon->getAlt());
-            Serial.print("Action  = ");  Serial.println(beacon->getActionRaw());
-            Serial.print("Flags   = ");  Serial.println(beacon->getFlagsRaw());
-            Serial.print("Sats    = ");  Serial.println(beacon->getSats());
-            Serial.print("HDOP    = ");  Serial.println(beacon->getHdop());
-            Serial.print("Speed   = ");  Serial.println(beacon->getHdop());
-            Serial.print("RSSI    = ");  Serial.println(beacon->getRssi());
-            Serial.print("SNR     = ");  Serial.println(beacon->getSnr());
+            // Serial.print("LAT     = ");  Serial.println(beacon->getLat(), 6);
+            // Serial.print("LONG    = "); Serial.println(beacon->getLon(), 6);
+            // Serial.print("COURSE  = "); Serial.println(beacon->getCourse(), 3);
+            // Serial.print("ALT     = ");  Serial.println(beacon->getAlt());
+            // Serial.print("Action  = ");  Serial.println(beacon->getActionRaw());
+            // Serial.print("Flags   = ");  Serial.println(beacon->getFlagsRaw());
+            // Serial.print("Sats    = ");  Serial.println(beacon->getSats());
+            // Serial.print("HDOP    = ");  Serial.println(beacon->getHdop());
+            // Serial.print("Speed   = ");  Serial.println(beacon->getHdop());
+            // Serial.print("RSSI    = ");  Serial.println(beacon->getRssi());
+            // Serial.print("SNR     = ");  Serial.println(beacon->getSnr());
         }
         nextSerialTaskTs = millis() + TASK_SERIAL_RATE;
     }
