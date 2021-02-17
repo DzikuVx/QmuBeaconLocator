@@ -20,10 +20,10 @@ void ConfigNode::seed(void) {
 
     val = EEPROM.read(EEPROM_ADDRESS_BEACONID_KEY_SEEDED);
     if (val != 0xf1) {
-        EEPROM.write(EEPROM_ADDRESS_BEACONID_0, random(1, 255)); //Yes, from 1 to 254
-        EEPROM.write(EEPROM_ADDRESS_BEACONID_1, random(1, 255)); //Yes, from 1 to 254
-        EEPROM.write(EEPROM_ADDRESS_BEACONID_2, random(1, 255)); //Yes, from 1 to 254
-        EEPROM.write(EEPROM_ADDRESS_BEACONID_3, random(1, 255)); //Yes, from 1 to 254
+        EEPROM.write(EEPROM_ADDRESS_BEACONID_0, random(1, 255));
+        EEPROM.write(EEPROM_ADDRESS_BEACONID_1, random(1, 255));
+        EEPROM.write(EEPROM_ADDRESS_BEACONID_2, random(1, 255));
+        EEPROM.write(EEPROM_ADDRESS_BEACONID_3, random(1, 255));
         EEPROM.write(EEPROM_ADDRESS_BEACONID_KEY_SEEDED, 0xf1);
         EEPROM.commit();
     }
