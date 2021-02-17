@@ -11,10 +11,12 @@ class Beacon {
         Beacon(void);
         uint32_t getId(void);
         void setId(uint32_t id);
-        void setPos(double lat, double lon, double alt);
         double getLat(void);
         double getLon(void);
         double getAlt(void);
+        int getCourse(void);
+        uint8_t getActionRaw(void);
+        uint8_t getFlagsRaw(void);
         void setLat(double lat);
         void setLon(double lon);
         void setAlt(double alt);
@@ -28,6 +30,12 @@ class Beacon {
         uint32_t getLastContactMillis(void);
         void setLastContactMillis(uint32_t value);
         bool hasPos(void);
+        void setSats(uint8_t value);
+        void setHdop(long value);
+        uint8_t getSats(void);
+        long getHdop(void);
+        void setSpeed(double value);
+        double getSpeed(void);
     private:
         uint32_t _id;
         bool _hasPos;
@@ -35,6 +43,9 @@ class Beacon {
         double _lon;
         double _alt;
         int _course;  
+        long _hdop;
+        long _speed;
+        uint8_t _sats;
         uint8_t _rssi;
         uint8_t _snr;
         uint8_t _flags;

@@ -12,7 +12,6 @@
 class Beacons {
     public:
         Beacons(void);
-        void updatePosition(uint32_t beaconId, double lat, double lon, double alt);
         Beacon *getBeacon(uint32_t id);
         Beacon *getEmpty(void);
         Beacon *get(uint8_t index);

@@ -168,7 +168,7 @@ void DeviceNode::execute(void) {
             }
 
             qsp.frameToSend = QSP_FRAME_COORDS;
-            qsp.payloadLength = 20;
+            qsp.payloadLength = qspFrameLengths[QSP_FRAME_COORDS];
         } else if (frameToSend == QSP_FRAME_MISC) {
             int32ToBuf(qsp.payload, 0, configNode.beaconId);
 
@@ -178,13 +178,10 @@ void DeviceNode::execute(void) {
             writeValue = gps.speed.mps() * 100.0d;
             int32ToBuf(qsp.payload, 8, writeValue);
 
-            writeValue = gps.altitude.meters() * 100.0d;
-            int32ToBuf(qsp.payload, 12, writeValue);
-
-            qsp.payload[16] = gps.satellites.value();
+            qsp.payload[12] = gps.satellites.value();
 
             qsp.frameToSend = QSP_FRAME_MISC;
-            qsp.payloadLength = 17;
+            qsp.payloadLength = qspFrameLengths[QSP_FRAME_MISC];
         }
 
         transmitPayload = true;

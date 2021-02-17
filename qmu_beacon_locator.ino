@@ -77,7 +77,7 @@ ConfigNode configNode;
 
 #define TASK_SERIAL_RATE 500
 #define TASK_LORA_READ 1 // We check for new packets only from time to time, no need to do it more often
-#define TASK_LORA_TX_MS 200 // Number of ms between positio updates
+#define TASK_LORA_TX_MS 400 // Number of ms between positio updates
 
 DeviceNode deviceNode(TASK_LORA_TX_MS);
 
@@ -105,8 +105,8 @@ void onQspSuccess(uint8_t receivedChannel) {
     beacon->setSnr(radioNode.snr);
     beacon->setLastContactMillis(millis());
 
+    long tmp;
     if (qsp.frameId == QSP_FRAME_COORDS) {
-        long tmp;
 
         //We have a valid position data
         if (qsp.payload[19] & POSITION_FLAG_POSITION_VALID) {
@@ -134,15 +134,31 @@ void onQspSuccess(uint8_t receivedChannel) {
             beacon->setAlt(tmp / 100.0d);
         }
 
-        beacon->setAction(qsp.payload[18]);
+        if (qsp.payload[19] & POSITION_FLAG_ALTITUDE_VALID) {
+            tmp = qsp.payload[12];
+            tmp += qsp.payload[13] << 8;
+            tmp += qsp.payload[14] << 16;
+            tmp += qsp.payload[15] << 24;
 
-        //TODO fill flags
-        //TODO fill course        
+            beacon->setAlt(tmp / 100.0d);
+        }
+
+        if (qsp.payload[19] & POSITION_FLAG_HEADING_VALID) {
+            tmp = qsp.payload[16];
+            tmp += qsp.payload[17] << 8;
+
+            beacon->setCourse(tmp);
+        }
+
+        beacon->setAction(qsp.payload[18]);
+        beacon->setFlags(qsp.payload[19]);
+    } else if (qsp.frameId == QSP_FRAME_MISC) {
+        beacon->setSats(qsp.payload[16]);
     }
 }
 
 void onQspFailure() {
-
+    Serial.println("Failure to decode QSP frame");
 }
 
 void setup()
@@ -235,12 +251,18 @@ void loop()
         // Serial.println(configNode.beaconId);
         // Serial.println(gps.altitude.meters());
         if (beacons.currentBeaconIndex >= 0) {
-            // Beacon *beacon = beacons.get(beacons.currentBeaconIndex);
-            // Serial.print("LAT=");  Serial.println(beacon->getLat(), 6);
-            // Serial.print("LONG="); Serial.println(beacon->getLon(), 6);
-            // Serial.print("ALT=");  Serial.println(beacon->getAlt());
-            // Serial.print("RSSI=");  Serial.println(beacon->getRssi());
-            // Serial.print("SNR=");  Serial.println(beacon->getSnr());
+            Beacon *beacon = beacons.get(beacons.currentBeaconIndex);
+            Serial.print("LAT     = ");  Serial.println(beacon->getLat(), 6);
+            Serial.print("LONG    = "); Serial.println(beacon->getLon(), 6);
+            Serial.print("COURSE  = "); Serial.println(beacon->getCourse(), 3);
+            Serial.print("ALT     = ");  Serial.println(beacon->getAlt());
+            Serial.print("Action  = ");  Serial.println(beacon->getActionRaw());
+            Serial.print("Flags   = ");  Serial.println(beacon->getFlagsRaw());
+            Serial.print("Sats    = ");  Serial.println(beacon->getSats());
+            Serial.print("HDOP    = ");  Serial.println(beacon->getHdop());
+            Serial.print("Speed   = ");  Serial.println(beacon->getHdop());
+            Serial.print("RSSI    = ");  Serial.println(beacon->getRssi());
+            Serial.print("SNR     = ");  Serial.println(beacon->getSnr());
         }
         nextSerialTaskTs = millis() + TASK_SERIAL_RATE;
     }

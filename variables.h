@@ -28,7 +28,7 @@ enum qspFrames {
 static const uint8_t qspFrameLengths[QSP_FRAME_COUNT] = {
     4, //QSP_FRAME_IDENT
     20, //QSP_FRAME_COORDS
-    17 //QSP_FRAME_MISC
+    13 //QSP_FRAME_MISC
 };
 
 enum coordsFrameFlags {
