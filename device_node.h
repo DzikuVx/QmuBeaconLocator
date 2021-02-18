@@ -4,10 +4,10 @@
 #define DEVICE_NODE_H
 
 #include <Arduino.h>
-#include <QmuTactile.h>
+#include "QmuTactile.h"
 #include "radio_node.h"
 #include "config_node.h"
-#include <TinyGps++.h>
+#include "TinyGPSpp.h"
 
 extern QmuTactile buttonMain;
 extern QspConfiguration_t qsp;

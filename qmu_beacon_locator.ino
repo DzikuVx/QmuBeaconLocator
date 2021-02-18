@@ -1,7 +1,7 @@
-#include <TinyGPS++.h>
+#include "TinyGPSpp.h"
 #include <HardwareSerial.h>
 #include "SSD1306.h"
-#include <QmuTactile.h>
+#include "QmuTactile.h"
 #include <SPI.h>
 #include "variables.h"
 #include "lora.h"

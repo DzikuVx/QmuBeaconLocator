@@ -2,7 +2,7 @@
 #define OLED_DISPLAY
 
 #include "SSD1306.h"
-#include <TinyGPS++.h>
+#include "TinyGPSpp.h"
 #include "beacons.h"
 #include "device_node.h"
 
